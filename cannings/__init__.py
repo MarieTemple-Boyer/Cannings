@@ -1,0 +1,3 @@
+from cannings.offsprings_distribution import average
+from cannings.offsprings_distribution import generate_offsprings
+
