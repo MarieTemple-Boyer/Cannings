@@ -7,7 +7,7 @@
 
 import numpy as np
 from scipy.special import zeta
-
+import math
 
 def average(alpha, p0):
     """ Compute the average of the number of offsprings of one individual for a Cannings model with parameters alpha and p0.
@@ -16,15 +16,16 @@ def average(alpha, p0):
     1.6449340668482264
     >>> average(alpha=1.1, p0 = 0.5)
     5.292224232475402
+    >>> average(alpha=1, p0=0)
+    inf
     """
     
     check_parameters(alpha, p0)
 
-    if alpha <= 1:
-        return math.inf
+    if alpha > 1:
+        return (1-p0)*zeta(alpha)
 
-    return (1-p0)*zeta(alpha)
-
+    return math.inf
 
 def check_parameters(alpha, p0):
     """ Check that the parameters alpha and p0 are admissible
