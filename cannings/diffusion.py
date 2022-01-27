@@ -8,21 +8,25 @@ import numpy as np
 
 from cannings import generate_offsprings
 
+
 def nb_next_generation_fertility(nb_individuals_type_A, pop_size, alpha, p0=0, selection_coeff=0):
     """ Compute the number of individuals of type A in the next generation with a fertility selection advantage (in a Cannings model)
     - nb_individuals_type_A : number of individuals that have a selective advantage selection_coeff
     - pop_size : number total of individuals
     - alpha, p0 : parameters for the Cannings model
-    
+
     >>> np.random.seed(0)
     >>> nb_next_generation_fertility(nb_individuals_type_A=50, pop_size=100, alpha=2, selection_coeff=1)
     62
     """
 
-    nb_offsprings_type_A = np.round((1+selection_coeff)*generate_offsprings(alpha, p0, nb_individuals_type_A)).astype(int)
-    nb_other_offsprings = generate_offsprings(alpha, p0, pop_size-nb_individuals_type_A)
+    nb_offsprings_type_A = np.round(
+        (1+selection_coeff)*generate_offsprings(alpha, p0, nb_individuals_type_A)).astype(int)
+    nb_other_offsprings = generate_offsprings(
+        alpha, p0, pop_size-nb_individuals_type_A)
 
-    offsprings = np.concatenate((np.ones(nb_offsprings_type_A), np.zeros(nb_other_offsprings))).astype(int)
+    offsprings = np.concatenate(
+        (np.ones(nb_offsprings_type_A), np.zeros(nb_other_offsprings))).astype(int)
     np.random.shuffle(offsprings)
     surviving_offsprings_type_A = offsprings[0:pop_size].sum()
 
@@ -30,56 +34,51 @@ def nb_next_generation_fertility(nb_individuals_type_A, pop_size, alpha, p0=0, s
 
 
 def nb_next_generation_viability(nb_individuals_type_A, pop_size, alpha, p0=0, selection_coeff=0):
-    """ Compute the number of individuals of type A in the next generation with a viability exponential selection advantage (in a Cannings model)
+    """ Compute the number of individuals of type A in the next generation with a viability selection advantage (in a Cannings model)
     - nb_individuals_type_A : number of individuals that have a selective advantage selection_coeff
     - pop_size : number total of individuals
     - alpha, p0 : parameters for the Cannings model
-    
-    >>> np.random.seed(1)
+
+    >>> np.random.seed(0)
     >>> nb_next_generation_viability(nb_individuals_type_A=50, pop_size=100, alpha=2, selection_coeff=1)
-    77
+    48
     """
 
-    nb_offsprings_type_A = generate_offsprings(alpha, p0, nb_individuals_type_A)
-    nb_other_offsprings = generate_offsprings(alpha, p0, pop_size-nb_individuals_type_A)
+    nb_offsprings_type_A = generate_offsprings(
+        alpha, p0, nb_individuals_type_A)
+    nb_other_offsprings = generate_offsprings(
+        alpha, p0, pop_size-nb_individuals_type_A)
 
-    offsprings = np.concatenate(
-        (np.ones(nb_offsprings_type_A), np.zeros(nb_other_offsprings)))
+    ratio = (1 + selection_coeff) / \
+        (1 + nb_individuals_type_A/pop_size * selection_coeff)
+    surviving_offsprings_type_A = np.random.hypergeometric(
+        ratio*nb_offsprings_type_A, nb_other_offsprings, pop_size)
 
-    exp_realisation_A = np.random.exponential(
-        1/(1+selection_coeff), size=nb_offsprings_type_A)
-    exp_realisation_other = np.random.exponential(1, size=nb_other_offsprings)
+    return surviving_offsprings_type_A
 
-    exp_realisation = np.concatenate(
-        (exp_realisation_A, exp_realisation_other))
 
-    order = np.argsort(exp_realisation)[0:pop_size]
-    surviving_offprings_type_A = offsprings[order].sum()
-
-    return surviving_offprings_type_A.astype(int)
-    
-
-def nb_next_generation_viability_gaussian(nb_individuals_type_A, pop_size, alpha, p0=0, selection_coeff=0, variance=1):
-    """ Compute the number of individuals of type A in the next generation with a viability exponential selection advantage (in a Cannings model)
+def nb_next_generation(selection_type, nb_individuals_type_A, pop_size, alpha, p0=0, selection_coeff=0):
+    """ Compute the number of individuals of type A in the next generation with a selective advantage (in a Cannings model)
+    - selection_type : type of the selection. It can be either 'viability' or 'fecundity' (or 'fertility')
     - nb_individuals_type_A : number of individuals that have a selective advantage selection_coeff
-    - pop_size: number total of individuals
-    - alpha, p0: parameters for the Cannings model
+    - pop_size : number total of individuals
+    - alpha, p0 : parameters for the Cannings model
 
-    /!\ Issue: There may be less thant 0 or more than pop_size individuals of type A in the next generation (for instance if the variance is big)
-
-    >>> np.random.seed(2)
-    >>> nb_next_generation_viability_gaussian(nb_individuals_type_A=50, pop_size=100, alpha=1, selection_coeff=1)
-    53
+    >>> np.random.seed(0)
+    >>> nb_next_generation(selection_type='fertility', nb_individuals_type_A=50, pop_size=100, alpha=2, selection_coeff=1)
+    62
+    >>> nb_next_generation(selection_type='this_type_does_not_exist', nb_individuals_type_A=50, pop_size=100, alpha=2)
+    Traceback (most recent call last):
+        ...
+    Exception: The selection type selection_type was 'this_type_does_not_exist' but it has to be either 'fecundity' (or 'fertility') or 'viability'.
     """
-    
-    nb_offsprings_type_A = generate_offsprings(alpha, p0, nb_individuals_type_A)
-    nb_other_offsprings = generate_offsprings(alpha, p0, pop_size-nb_individuals_type_A)
-    
-    average = pop_size * (1+selection_coeff)*nb_offsprings_type_A / ((1+selection_coeff)*nb_offsprings_type_A + nb_other_offsprings)
-     
-    surviving_offprings_type_A = int(np.random.normal(average, variance))
-
-    return surviving_offprings_type_A
+    if selection_type == 'fertility' or selection_type == 'fecundity':
+        return nb_next_generation_fertility(nb_individuals_type_A, pop_size, alpha, p0, selection_coeff)
+    elif selection_type == 'viability':
+        return nb_next_generation_viability(nb_individuals_type_A, pop_size, alpha, p0, selection_coeff)
+    else:
+        raise Exception(
+            f"The selection type selection_type was '{selection_type}' but it has to be either 'fecundity' (or 'fertility') or 'viability'.")
 
 
 if __name__ == "__main__":
