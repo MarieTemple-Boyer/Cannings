@@ -20,9 +20,8 @@ def nb_next_generation_fertility(nb_individuals_type_A, pop_size, alpha, p0=0, s
         (1+selection_coeff)*generate_offsprings(alpha, p0, nb_individuals_type_A)).astype(int)
     nb_other_offsprings = generate_offsprings(
         alpha, p0, pop_size-nb_individuals_type_A)
-
-    surviving_offsprings_type_A = np.random.hypergeometric(
-        nb_offsprings_type_A, nb_other_offsprings, pop_size)
+    
+    surviving_offsprings_type_A = np.random.hypergeometric(nb_offsprings_type_A, nb_other_offsprings, pop_size)
 
     return surviving_offsprings_type_A
 
@@ -35,7 +34,7 @@ def nb_next_generation_viability(nb_individuals_type_A, pop_size, alpha, p0=0, s
 
     >>> np.random.seed(0)
     >>> nb_next_generation_viability(nb_individuals_type_A=50, pop_size=100, alpha=2, selection_coeff=1)
-    48
+    56
     """
 
     nb_offsprings_type_A = generate_offsprings(
@@ -45,8 +44,11 @@ def nb_next_generation_viability(nb_individuals_type_A, pop_size, alpha, p0=0, s
 
     ratio = (1 + selection_coeff) / \
         (1 + nb_individuals_type_A/pop_size * selection_coeff)
-    surviving_offsprings_type_A = np.random.hypergeometric(
-        ratio*nb_offsprings_type_A, nb_other_offsprings, pop_size)
+   
+    nb_offsprings_type_A_eq = ratio*nb_offsprings_type_A
+    nb_other_offsprings_eq = max(0, nb_other_offsprings + (1-ratio)*nb_offsprings_type_A)
+
+    surviving_offsprings_type_A = np.random.hypergeometric(nb_offsprings_type_A_eq, nb_other_offsprings_eq, pop_size)
 
     return surviving_offsprings_type_A
 
@@ -60,7 +62,7 @@ def nb_next_generation(selection_type, nb_individuals_type_A, pop_size, alpha, p
 
     >>> np.random.seed(0)
     >>> nb_next_generation(selection_type='fertility', nb_individuals_type_A=50, pop_size=100, alpha=2, selection_coeff=1)
-    62
+    63
     >>> nb_next_generation(selection_type='this_type_does_not_exist', nb_individuals_type_A=50, pop_size=100, alpha=2)
     Traceback (most recent call last):
         ...
