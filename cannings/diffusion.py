@@ -14,10 +14,6 @@ def nb_next_generation_fertility(nb_individuals_type_A, pop_size, alpha, p0=0, s
     - nb_individuals_type_A : number of individuals that have a selective advantage selection_coeff
     - pop_size : number total of individuals
     - alpha, p0 : parameters for the Cannings model
-
-    >>> np.random.seed(0)
-    >>> nb_next_generation_fertility(nb_individuals_type_A=50, pop_size=100, alpha=2, selection_coeff=1)
-    62
     """
 
     nb_offsprings_type_A = np.round(
@@ -25,10 +21,8 @@ def nb_next_generation_fertility(nb_individuals_type_A, pop_size, alpha, p0=0, s
     nb_other_offsprings = generate_offsprings(
         alpha, p0, pop_size-nb_individuals_type_A)
 
-    offsprings = np.concatenate(
-        (np.ones(nb_offsprings_type_A), np.zeros(nb_other_offsprings))).astype(int)
-    np.random.shuffle(offsprings)
-    surviving_offsprings_type_A = offsprings[0:pop_size].sum()
+    surviving_offsprings_type_A = np.random.hypergeometric(
+        nb_offsprings_type_A, nb_other_offsprings, pop_size)
 
     return surviving_offsprings_type_A
 
