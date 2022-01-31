@@ -180,7 +180,7 @@ def nb_next_generation_viability(viability_type, nb_individuals_type_A, pop_size
             f"The viability type was '{viability_type}' but it has to be 'hypergeometric', 'bernoulli' or 'exponential'.")
 
 
-def nb_next_generation(selection_type, nb_individuals_type_A, pop_size, alpha, p0=0, selection_coeff=0, viability_type=None):
+def nb_next_generation(selection_type, nb_individuals_type_A, pop_size, alpha, p0=0, selection_coeff=0, viability_type='hypergeometric'):
     """ Compute the number of individuals of type A in the next generation with a selective advantage (in a Cannings model)
     - selection_type : type of the selection. It can be either 'viability' or 'fecundity' (or 'fertility')
     - viability_type :  type of viability considered (if the type of selection is 'viability'
