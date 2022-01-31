@@ -12,11 +12,12 @@ The viability selection allow the offspring of individuals of type A to have mor
 
 ## Usage
 
-The submodule offsprings_distribution allows to compute a random draw of the number of offsprings of an individual.
+The submodule cannings contains tools to modelise a Cannings reproduction with selection.
+The file 'offsprings_distribution' allows to compute a random draw of the number of offsprings of an individual.
+The file 'diffusion' allows to compute the diffusion on an allele A tha have a selective advantage.
+The file 'fixation' allows to compute the time to fixation or extinction of an allele A that have a selective advantage.
 
-The submodule diffusion allows to compute the diffusion on an allele A tha have a selective advantage.
-
-The submodule fixation allows to compute the time to fixation or extinction of an allele A that have a selective advantage.
+The submodule cannings_data allows to compute a lot of fixation times, to store the simulations and handle to data collected.
 
 ## Installation
 
