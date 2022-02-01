@@ -27,9 +27,9 @@ def fixation(pop_size, alpha, p0=0, selection_coeff=0, initial_nb_indiv_A=1, sel
     >>> np.random.seed(2)
     >>> # the allele A is fixed at the generation 29
     >>> fixation(pop_size=100, alpha=2, selection_coeff=0.1, initial_nb_indiv_A=10)
-    (True, 29)
-    >>> fixation(pop_size=100, alpha=1.4, selection_coeff=1, selection_type='viability')
-    (False, 1)
+    (True, 117)
+    >>> fixation(pop_size=100, alpha=1.4, selection_coeff=1, selection_type='viability_exponential')
+    (False, 6)
     """
 
     assert 0 <= initial_nb_indiv_A and initial_nb_indiv_A <= pop_size
@@ -44,7 +44,7 @@ def fixation(pop_size, alpha, p0=0, selection_coeff=0, initial_nb_indiv_A=1, sel
     while not finished:
         nb_generations += 1
         nb_indiv_A = nb_next_generation(
-            selection_type, nb_indiv_A, pop_size, alpha, p0=p0, selection_coeff=selection_coeff)
+            nb_indiv_A, pop_size, alpha, p0=p0, selection_coeff=selection_coeff, selection_type=selection_type)
 
         fixation = nb_indiv_A == pop_size
         extinction = nb_indiv_A == 0

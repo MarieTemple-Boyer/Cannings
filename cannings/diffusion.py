@@ -93,7 +93,7 @@ def nb_next_generation_viability_bernoulli(nb_individuals_type_A, pop_size, alph
     - nb_individuals_type_A : number of individuals that have a selective advantage selection_coeff
     - pop_size : number total of individuals
     - alpha, p0 : parameters for the Cannings model
-    
+
     >>> np.random.seed(0)
     >>> nb_next_generation_viability_bernoulli(nb_individuals_type_A=50, pop_size=100, alpha=2, selection_coeff=1)
     55
@@ -103,12 +103,13 @@ def nb_next_generation_viability_bernoulli(nb_individuals_type_A, pop_size, alph
         alpha, p0, nb_individuals_type_A)
     nb_other_offspring = generate_offsprings(
         alpha, p0, pop_size-nb_individuals_type_A)
-    
+
     surviving_offspring = 0
     surviving_offspring_type_A = 0
 
     while surviving_offspring < pop_size:
-        proba = nb_offspring_type_A / (nb_offspring_type_A + nb_other_offspring)
+        proba = nb_offspring_type_A / \
+            (nb_offspring_type_A + nb_other_offspring)
         draw_offspring = np.random.binomial(1, proba)
         if draw_offspring:
             surviving_offspring += 1
@@ -141,21 +142,25 @@ def nb_next_generation_viability_bernoulli2(nb_individuals_type_A, pop_size, alp
 
     def death_offspring(nb_offspring_type_A, nb_other_offspring):
         proba = (1+selection_coeff) / (2+selection_coeff)
-        surviving_offspring_type_A = np.random.binomial(nb_offspring_type_A, proba)
-        surviving_offspring_other = np.random.binomial(nb_other_offspring, 1-proba)
+        surviving_offspring_type_A = np.random.binomial(
+            nb_offspring_type_A, proba)
+        surviving_offspring_other = np.random.binomial(
+            nb_other_offspring, 1-proba)
         return surviving_offspring_type_A, surviving_offspring_other
-    
+
     surviving_offspring_type_A = 0
     surviving_offspring_other = 0
 
     while surviving_offspring_type_A+surviving_offspring_other < pop_size:
-        surviving_offspring_type_A_this_time, surviving_offspring_other_this_time = death_offspring(nb_offspring_type_A, nb_other_offspring)
+        surviving_offspring_type_A_this_time, surviving_offspring_other_this_time = death_offspring(
+            nb_offspring_type_A, nb_other_offspring)
         nb_offspring_type_A -= surviving_offspring_type_A_this_time
         nb_other_offspring -= surviving_offspring_other_this_time
         surviving_offspring_type_A += surviving_offspring_type_A_this_time
-        surviving_offspring_other += surviving_offspring_other_this_time 
-        
-    truly_surviving_offspring_type_A = np.random.hypergeometric(surviving_offspring_type_A, surviving_offspring_other, pop_size)
+        surviving_offspring_other += surviving_offspring_other_this_time
+
+    truly_surviving_offspring_type_A = np.random.hypergeometric(
+        surviving_offspring_type_A, surviving_offspring_other, pop_size)
 
     return truly_surviving_offspring_type_A
 
@@ -180,7 +185,7 @@ def nb_next_generation_viability(viability_type, nb_individuals_type_A, pop_size
             f"The viability type was '{viability_type}' but it has to be 'hypergeometric', 'bernoulli' or 'exponential'.")
 
 
-def nb_next_generation(selection_type, nb_individuals_type_A, pop_size, alpha, p0=0, selection_coeff=0, viability_type='hypergeometric'):
+def nb_next_generation(nb_individuals_type_A, pop_size, alpha, p0=0, selection_coeff=0, selection_type='fertility'):
     """ Compute the number of individuals of type A in the next generation with a selective advantage (in a Cannings model)
     - selection_type : type of the selection. It can be either 'viability' or 'fecundity' (or 'fertility')
     - viability_type :  type of viability considered (if the type of selection is 'viability'
@@ -189,20 +194,26 @@ def nb_next_generation(selection_type, nb_individuals_type_A, pop_size, alpha, p
     - alpha, p0 : parameters for the Cannings model
 
     >>> np.random.seed(0)
-    >>> nb_next_generation(selection_type='fertility', nb_individuals_type_A=50, pop_size=100, alpha=2, selection_coeff=1)
-    63
-    >>> nb_next_generation(selection_type='this_type_does_not_exist', nb_individuals_type_A=50, pop_size=100, alpha=2)
+    >>> nb_next_generation(selection_type='viability_exponential', nb_individuals_type_A=50, pop_size=100, alpha=2, selection_coeff=1)
+    52
+    >>> nb_next_generation(nb_individuals_type_A=50, pop_size=100, alpha=2, selection_type = 'this_type_does_not_exist')
     Traceback (most recent call last):
         ...
-    Exception: The selection type was 'this_type_does_not_exist' but it has to be either 'fecundity' (or 'fertility') or 'viability'.
+    Exception: The selection type was 'this_type_does_not_exist' but it has to be one of those: 
+    'fertility' (or 'fecundity'), 'viability', 'viability_hypergeometric', 'viability_exponential', 'viability_bernoulli'
     """
     if selection_type == 'fertility' or selection_type == 'fecundity':
         return nb_next_generation_fertility(nb_individuals_type_A, pop_size, alpha, p0, selection_coeff)
-    elif selection_type == 'viability':
-        return nb_next_generation_viability(viability_type, nb_individuals_type_A, pop_size, alpha, p0, selection_coeff)
+    elif selection_type == 'viability' or selection_type == 'viability_hypergeometric':
+        return nb_next_generation_viability_hypergeometric(nb_individuals_type_A, pop_size, alpha, p0, selection_coeff)
+    elif selection_type == 'viability_exponential':
+        return nb_next_generation_viability_exponential(nb_individuals_type_A, pop_size, alpha, p0, selection_coeff)
+    elif selection_type == 'viability_bernoulli':
+        return nb_next_generation_viability_bernoulli(nb_individuals_type_A, pop_size, alpha, p0, selection_coeff)
     else:
+        available_selection_type = "'fertility' (or 'fecundity'), 'viability', 'viability_hypergeometric', 'viability_exponential', 'viability_bernoulli'"
         raise Exception(
-            f"The selection type was '{selection_type}' but it has to be either 'fecundity' (or 'fertility') or 'viability'.")
+                f"The selection type was '{selection_type}' but it has to be one of those: \n" + available_selection_type)
 
 
 if __name__ == "__main__":
