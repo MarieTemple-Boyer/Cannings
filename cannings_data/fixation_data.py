@@ -3,6 +3,7 @@ Set of class used to model the data stored in a json file thanks to the function
 """
 
 import json
+from tabulate import tabulate
 
 
 class CompleteData:
@@ -76,6 +77,56 @@ class CompleteData:
             return next(fixation_set for fixation_set in self.fixations if fixation_set.alpha == alpha and fixation_set.selection_coeff == selection_coeff)
         else:
             return None
+
+    def print_nb_iterations(self):
+        """ Print a table with two entries (alpha and the selection coefficient) giving the number of iterations for each set of values/
+        >>> complete_data.print_nb_iterations()
+        Number of iterations
+        -----------------  ----  ----
+        selection \ alpha   1.1   1.5
+        0.1                10    10
+        1                  10     0
+        -----------------  ----  ----
+        """
+        alpha_values = ['selection \ alpha'] + self.alpha()
+        tab_iter = [alpha_values]
+        for selec in self.selection_coeff():
+            this_line = [selec]
+            for alpha in self.alpha():
+                if self.exists(alpha, selec):
+                    this_line.append(self.fixation_set(
+                        alpha, selec).nb_iterations())
+                else:
+                    this_line.append(0)
+            tab_iter.append(this_line)
+
+        print('Number of iterations')
+        print(tabulate(tab_iter))
+
+    def print_nb_fixations(self):
+        """ Print a table with two entries (alpha and the selection coefficient) giving the number of fixations for each set of values/
+        >>> complete_data.print_nb_fixations()
+        Number of fixations
+        -----------------  ---  ---
+        selection \ alpha  1.1  1.5
+        0.1                0    2
+        1                  3    0
+        -----------------  ---  ---
+        """
+        alpha_values = ['selection \ alpha'] + self.alpha()
+        tab_iter = [alpha_values]
+        for selec in self.selection_coeff():
+            this_line = [selec]
+            for alpha in self.alpha():
+                if self.exists(alpha, selec):
+                    this_line.append(self.fixation_set(
+                        alpha, selec).nb_fixations())
+                else:
+                    this_line.append(0)
+            tab_iter.append(this_line)
+
+        print('Number of fixations')
+        print(tabulate(tab_iter))
 
 
 class Hyperparameters:
