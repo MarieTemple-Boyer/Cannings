@@ -82,7 +82,7 @@ class Hyperparameters:
     """ Class for the hyperparameters.
         model: model use for the reproduction (Cannings for instance)
         population_size: size of the population
-        p0: probability that an individual has no offsprings
+        p0: probability that an individual has no offspring
         selection: type of selection (viability or fecundity for instance)
     """
 
