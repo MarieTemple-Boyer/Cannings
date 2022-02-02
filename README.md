@@ -7,7 +7,7 @@ Tools for understanding a Cannings model for the evolution of a population.
 In the module p0 is the probability that an individual has no offspring and alpha is such that the probability that an individual has more than k offpsprings is (1-p0) 1/(k^alpha).
 The surviving offspring are then sampled so that there only pop_size offsprings that survived.
 
-The fecundity (or fertility) selection allow the individuals of type A to have more offspring.
+The fecundity selection allow the individuals of type A to have more offspring.
 The viability selection allow the offspring of individuals of type A to have more chances to survive.
 
 ## Usage

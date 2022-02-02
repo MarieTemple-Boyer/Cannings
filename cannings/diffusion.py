@@ -9,8 +9,8 @@ import numpy as np
 from cannings import generate_offspring
 from scipy.stats import nchypergeom_wallenius
 
-def nb_next_generation_fertility(nb_individuals_type_A, pop_size, alpha, p0=0, selection_coeff=0):
-    """ Compute the number of individuals of type A in the next generation with a fertility selection advantage (in a Cannings model)
+def nb_next_generation_fecundity(nb_individuals_type_A, pop_size, alpha, p0=0, selection_coeff=0):
+    """ Compute the number of individuals of type A in the next generation with a fecundity selection advantage (in a Cannings model)
     - nb_individuals_type_A : number of individuals that have a selective advantage selection_coeff
     - pop_size : number total of individuals
     - alpha, p0 : parameters for the Cannings model
@@ -207,9 +207,9 @@ def nb_next_generation_viability(viability_type, nb_individuals_type_A, pop_size
             f"The viability type was '{viability_type}' but it has to be 'hypergeometric', 'bernoulli' or 'exponential'.")
 
 
-def nb_next_generation(nb_individuals_type_A, pop_size, alpha, p0=0, selection_coeff=0, selection_type='fertility'):
+def nb_next_generation(nb_individuals_type_A, pop_size, alpha, p0=0, selection_coeff=0, selection_type='fecundity'):
     """ Compute the number of individuals of type A in the next generation with a selective advantage (in a Cannings model)
-    - selection_type : type of the selection. It can be either 'viability' or 'fecundity' (or 'fertility')
+    - selection_type : type of the selection. It can be either 'viability' or 'fecundity'
     - viability_type :  type of viability considered (if the type of selection is 'viability'
     - nb_individuals_type_A : number of individuals that have a selective advantage selection_coeff
     - pop_size : number total of individuals
@@ -222,10 +222,10 @@ def nb_next_generation(nb_individuals_type_A, pop_size, alpha, p0=0, selection_c
     Traceback (most recent call last):
         ...
     Exception: The selection type was 'this_type_does_not_exist' but it has to be one of those: 
-    'fertility' (or 'fecundity'), 'viability', 'viability_hypergeometric', 'viability_exponential', 'viability_bernoulli'
+    'fecundity', 'viability', 'viability_hypergeometric', 'viability_exponential', 'viability_bernoulli'
     """
-    if selection_type == 'fertility' or selection_type == 'fecundity':
-        return nb_next_generation_fertility(nb_individuals_type_A, pop_size, alpha, p0, selection_coeff)
+    if selection_type == 'fecundity':
+        return nb_next_generation_fecundity(nb_individuals_type_A, pop_size, alpha, p0, selection_coeff)
     elif selection_type == 'viability' or selection_type == 'viability_hypergeometric_non_central':
         return nb_next_generation_viability_hypergeometric_non_central(nb_individuals_type_A, pop_size, alpha, p0, selection_coeff)
     elif selection_type == 'viability_hypergeometric':
@@ -235,7 +235,7 @@ def nb_next_generation(nb_individuals_type_A, pop_size, alpha, p0=0, selection_c
     elif selection_type == 'viability_bernoulli':
         return nb_next_generation_viability_bernoulli(nb_individuals_type_A, pop_size, alpha, p0, selection_coeff)
     else:
-        available_selection_type = "'fertility' (or 'fecundity'), 'viability', 'viability_hypergeometric', 'viability_exponential', 'viability_bernoulli'"
+        available_selection_type = "'fecundity', 'viability', 'viability_hypergeometric', 'viability_exponential', 'viability_bernoulli'"
         raise Exception(
                 f"The selection type was '{selection_type}' but it has to be one of those: \n" + available_selection_type)
 

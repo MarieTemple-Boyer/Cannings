@@ -8,14 +8,14 @@ import numpy as np
 from cannings import nb_next_generation
 
 
-def fixation(pop_size, alpha, p0=0, selection_coeff=0, initial_nb_indiv_A=1, selection_type='fertility'):
+def fixation(pop_size, alpha, p0=0, selection_coeff=0, initial_nb_indiv_A=1, selection_type='fecundity'):
     """
     Compute the time to fixation of the allele A that have a selective advantage (in a Cannings model)
     - pop_size: size of the population
     - alpha, p0: parameters for the Cannings model
-    - selection_coeff: fertility selection coefficient of the allele A
+    - selection_coeff: fecundity selection coefficient of the allele A
     - initial_nb_indiv_A: number of invididuals that have the allele A at the first generation
-    - selection_type: type of the selection (either 'fertility' (or 'fecundity') or 'viability'). By default it is a fecundity selection
+    - selection_type: type of the selection (either 'fecundity' or 'viability'). By default it is a fecundity selection
 
     It return a couple (fixation, nb_generation).
     - fixation (bool): is True if all the individual have the allele A at the end
