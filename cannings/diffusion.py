@@ -27,14 +27,16 @@ def nb_next_generation_fecundity(nb_individuals_type_A, pop_size, alpha, p0=0, s
     return surviving_offspring_type_A
 
 
-def nb_next_generation_viability_hypergeometric_non_central(nb_individuals_type_A, pop_size, alpha, p0=0, selection_coeff=0):
-    """ Compute the number of individuals of type A in the next generation with a viability selection advantage (in a Cannings model)
+
+def nb_next_generation_viability(nb_individuals_type_A, pop_size, alpha, p0=0, selection_coeff=0):
+    """ Compute the number of individuals of type A in the next generation with a viability selection advantage (in a Cannings model).
+    An non neutral Wallenius hypergeometric distribution is considered.
     - nb_individuals_type_A : number of individuals that have a selective advantage selection_coeff
     - pop_size : number total of individuals
     - alpha, p0 : parameters for the Cannings model
 
     >>> np.random.seed(0)
-    >>> nb_next_generation_viability_hypergeometric_non_central(nb_individuals_type_A=50, pop_size=100, alpha=2, selection_coeff=1)
+    >>> nb_next_generation_viability(nb_individuals_type_A=50, pop_size=100, alpha=2, selection_coeff=1)
     52
     """
 
@@ -47,6 +49,21 @@ def nb_next_generation_viability_hypergeometric_non_central(nb_individuals_type_
     surviving_offspring_type_A = nchypergeom_wallenius.rvs(nb_total_offspring, nb_offspring_type_A, pop_size, 1+selection_coeff) 
 
     return surviving_offspring_type_A
+
+
+def nb_next_generation_viability_hypergeometric_non_central(nb_individuals_type_A, pop_size, alpha, p0=0, selection_coeff=0):
+    """ Compute the number of individuals of type A in the next generation with a viability selection advantage (in a Cannings model).
+    An non neutral Wallenius hypergeometric distribution is considered.
+    - nb_individuals_type_A : number of individuals that have a selective advantage selection_coeff
+    - pop_size : number total of individuals
+    - alpha, p0 : parameters for the Cannings model
+
+    >>> np.random.seed(0)
+    >>> nb_next_generation_viability_hypergeometric_non_central(nb_individuals_type_A=50, pop_size=100, alpha=2, selection_coeff=1)
+    52
+    """
+
+    return nb_next_generation_viability(nb_individuals_type_A, pop_size, alpha, p0, selection_coeff)
 
 
 def nb_next_generation_viability_hypergeometric(nb_individuals_type_A, pop_size, alpha, p0=0, selection_coeff=0):
@@ -187,26 +204,6 @@ def nb_next_generation_viability_bernoulli2(nb_individuals_type_A, pop_size, alp
     return truly_surviving_offspring_type_A
 
 
-def nb_next_generation_viability(viability_type, nb_individuals_type_A, pop_size, alpha, p0=0, selection_coeff=0):
-    """ Compute the number of individuals of type A in the next generation with a viability selective advantage (in a Cannings model)
-    - viability_type :  type of viability considered (if the type of selection is 'viability'
-    - nb_individuals_type_A : number of individuals that have a selective advantage selection_coeff
-    - pop_size : number total of individuals
-    - alpha, p0 : parameters for the Cannings model
-    """
-    if viability_type == 'hypergeometric':
-        return nb_next_generation_viability_hypergeometric(nb_individuals_type_A, pop_size, alpha, p0=p0, selection_coeff=selection_coeff)
-    elif viability_type == 'exponential':
-        return nb_next_generation_viability_exponential(nb_individuals_type_A, pop_size, alpha, p0=p0, selection_coeff=selection_coeff)
-    elif viability_type == 'bernoulli':
-        return nb_next_generation_viability_bernoulli(nb_individuals_type_A, pop_size, alpha, p0=p0, selection_coeff=selection_coeff)
-    elif viability_type == 'bernoulli2':
-        return nb_next_generation_viability_bernoulli2(nb_individuals_type_A, pop_size, alpha, p0=p0, selection_coeff=selection_coeff)
-    else:
-        raise Exception(
-            f"The viability type was '{viability_type}' but it has to be 'hypergeometric', 'bernoulli' or 'exponential'.")
-
-
 def nb_next_generation(nb_individuals_type_A, pop_size, alpha, p0=0, selection_coeff=0, selection_type='fecundity'):
     """ Compute the number of individuals of type A in the next generation with a selective advantage (in a Cannings model)
     - selection_type : type of the selection. It can be either 'viability' or 'fecundity'
@@ -226,7 +223,9 @@ def nb_next_generation(nb_individuals_type_A, pop_size, alpha, p0=0, selection_c
     """
     if selection_type == 'fecundity':
         return nb_next_generation_fecundity(nb_individuals_type_A, pop_size, alpha, p0, selection_coeff)
-    elif selection_type == 'viability' or selection_type == 'viability_hypergeometric_non_central':
+    elif selection_type == 'viability':
+        return nb_next_generation_viability(nb_individuals_type_A, pop_size, alpha, p0, selection_coeff)
+    elif selection_type == 'viability_hypergeometric_non_central':
         return nb_next_generation_viability_hypergeometric_non_central(nb_individuals_type_A, pop_size, alpha, p0, selection_coeff)
     elif selection_type == 'viability_hypergeometric':
         return nb_next_generation_viability_hypergeometric(nb_individuals_type_A, pop_size, alpha, p0, selection_coeff)
