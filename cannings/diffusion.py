@@ -7,7 +7,7 @@ knowing the number of them in the current generation."""
 import numpy as np
 
 from cannings import generate_offsprings
-
+from scipy.stats import nchypergeom_wallenius
 
 def nb_next_generation_fertility(nb_individuals_type_A, pop_size, alpha, p0=0, selection_coeff=0):
     """ Compute the number of individuals of type A in the next generation with a fertility selection advantage (in a Cannings model)
@@ -23,6 +23,28 @@ def nb_next_generation_fertility(nb_individuals_type_A, pop_size, alpha, p0=0, s
 
     surviving_offsprings_type_A = np.random.hypergeometric(
         nb_offsprings_type_A, nb_other_offsprings, pop_size)
+
+    return surviving_offsprings_type_A
+
+
+def nb_next_generation_viability_hypergeometric_non_central(nb_individuals_type_A, pop_size, alpha, p0=0, selection_coeff=0):
+    """ Compute the number of individuals of type A in the next generation with a viability selection advantage (in a Cannings model)
+    - nb_individuals_type_A : number of individuals that have a selective advantage selection_coeff
+    - pop_size : number total of individuals
+    - alpha, p0 : parameters for the Cannings model
+
+    >>> np.random.seed(0)
+    >>> nb_next_generation_viability_hypergeometric_non_central(nb_individuals_type_A=50, pop_size=100, alpha=2, selection_coeff=1)
+    52
+    """
+
+    nb_offspring_type_A = generate_offsprings(
+        alpha, p0, nb_individuals_type_A)
+    nb_other_offspring = generate_offsprings(
+        alpha, p0, pop_size-nb_individuals_type_A)
+    nb_total_offspring = nb_offspring_type_A + nb_other_offspring
+
+    surviving_offsprings_type_A = nchypergeom_wallenius.rvs(nb_total_offspring, nb_offspring_type_A, pop_size, 1+selection_coeff) 
 
     return surviving_offsprings_type_A
 
@@ -204,7 +226,9 @@ def nb_next_generation(nb_individuals_type_A, pop_size, alpha, p0=0, selection_c
     """
     if selection_type == 'fertility' or selection_type == 'fecundity':
         return nb_next_generation_fertility(nb_individuals_type_A, pop_size, alpha, p0, selection_coeff)
-    elif selection_type == 'viability' or selection_type == 'viability_hypergeometric':
+    elif selection_type == 'viability' or selection_type == 'viability_hypergeometric_non_central':
+        return nb_next_generation_viability_hypergeometric_non_central(nb_individuals_type_A, pop_size, alpha, p0, selection_coeff)
+    elif selection_type == 'viability_hypergeometric':
         return nb_next_generation_viability_hypergeometric(nb_individuals_type_A, pop_size, alpha, p0, selection_coeff)
     elif selection_type == 'viability_exponential':
         return nb_next_generation_viability_exponential(nb_individuals_type_A, pop_size, alpha, p0, selection_coeff)
