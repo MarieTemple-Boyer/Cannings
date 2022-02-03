@@ -15,7 +15,7 @@ class CompleteData:
         with open(file_name, 'r') as read_file:
             complete_data = json.load(read_file)
         hyp = complete_data[0]
-        self.hyperameters = Hyperparameters(
+        self.hyperparameters = Hyperparameters(
             hyp['model'], hyp['population_size'], hyp['p0'], hyp['selection'])
         all_data = complete_data[1]
         self.fixations = [FixationSet(
