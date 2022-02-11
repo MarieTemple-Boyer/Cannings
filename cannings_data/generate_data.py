@@ -98,8 +98,14 @@ def generate_fixation(file_name, pop_size, alpha, p0, selection_coeff, selection
     id_stored_data = all_data.index(stored_data)
 
     for _ in range(n_iter):
-        fix, time = cannings.fixation(
-            pop_size, alpha, p0, selection_coeff, selection_type=selection_type)
+        if selection_type=='fecundity':
+            fix, time = cannings.fixation(
+                pop_size, alpha, p0, selection_fecundity=selection_coeff)
+        elif selection_type=='viability':
+            fix, time = cannings.fixation(
+                pop_size, alpha, p0, selection_viability=selection_coeff) 
+        else:
+            raise Exception(f"The type of selection was {selection_type} but has to be 'fecundity' or 'viability'")
         if not fix:
             time = -time
         stored_data['fixation'].append(time)

@@ -8,7 +8,7 @@ import numpy as np
 from cannings import nb_next_generation
 
 
-def fixation(pop_size, alpha, p0=0, selection_coeff=0, initial_nb_indiv_A=1, selection_type='fecundity'):
+def fixation(pop_size, alpha, p0=0, initial_nb_indiv_A=1, selection_fecundity=0, selection_viability=0, check_expectation=True):
     """
     Compute the time to fixation of the allele A that have a selective advantage (in a Cannings model)
     - pop_size: size of the population
@@ -24,12 +24,10 @@ def fixation(pop_size, alpha, p0=0, selection_coeff=0, initial_nb_indiv_A=1, sel
     >>> # there no individual of type A so their is an extinction at the generation 0
     >>> fixation(pop_size=100, alpha=1.1, initial_nb_indiv_A=0)
     (False, 0)
-    >>> np.random.seed(2)
+    >>> np.random.seed(0)
     >>> # the allele A is fixed at the generation 29
-    >>> fixation(pop_size=100, alpha=2, selection_coeff=0.1, initial_nb_indiv_A=10)
-    (True, 117)
-    >>> fixation(pop_size=100, alpha=1.4, selection_coeff=1, selection_type='viability_exponential')
-    (False, 6)
+    >>> fixation(pop_size=100, alpha=2, initial_nb_indiv_A=10, selection_fecundity=0.1, selection_viability=1)
+    (True, 15)
     """
 
     assert 0 <= initial_nb_indiv_A and initial_nb_indiv_A <= pop_size
@@ -44,7 +42,7 @@ def fixation(pop_size, alpha, p0=0, selection_coeff=0, initial_nb_indiv_A=1, sel
     while not finished:
         nb_generations += 1
         nb_indiv_A = nb_next_generation(
-            nb_indiv_A, pop_size, alpha, p0=p0, selection_coeff=selection_coeff, selection_type=selection_type)
+            nb_indiv_A, pop_size, alpha, p0=p0, selection_fecundity=selection_fecundity, selection_viability=selection_viability)
 
         fixation = nb_indiv_A == pop_size
         extinction = nb_indiv_A == 0
