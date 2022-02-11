@@ -18,6 +18,7 @@ The file 'diffusion' allows to compute the diffusion on an allele A tha have a s
 The file 'fixation' allows to compute the time to fixation or extinction of an allele A that have a selective advantage.
 
 The submodule cannings_data allows to compute a lot of fixation times, to store the simulations and handle to data collected.
+It is usefull to compare fecundity and viability selection. Yet it is not designed to have both fecundity and viability selection.
 
 ## Installation
 
