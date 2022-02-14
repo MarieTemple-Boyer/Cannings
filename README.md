@@ -1,6 +1,7 @@
 # Cannings
 
 Tools for understanding a Cannings model for the evolution of a population.
+
 The distribution for the Cannings model is inspired by the article 'Coalescent processes obtained from supercritical Galton-Walton processes' from Jason Schweinsberg (2003).
 
 ## Cannings model used
