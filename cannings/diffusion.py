@@ -21,15 +21,25 @@ def additional_offspring(nb_individuals_type_A, pop_size, nb_missing_offspring):
     >>> additional_offspring(50, 100, 3)
     2
     """
-
+    
     nb_additional_offspring_type_A = np.random.binomial(
         nb_missing_offspring, nb_individuals_type_A/pop_size)
 
     return nb_additional_offspring_type_A
 
 
-def nb_next_generation(nb_individuals_type_A, pop_size, alpha, p0=0, selection_fecundity=0, selection_viability=0, check_expectation=True):
-    """
+def nb_next_generation(nb_individuals_type_A, pop_size, alpha, p0=0, selection_fecundity=0, selection_viability=0, check_expectation=True, return_offspring_shortage=False):
+    """ Compute the number of individuals of type A in the next generation with a selective advantage (in a Cannings model)
+    - nb_individuals_type_A : number of individuals that have a selective advantage selection_coeff
+    - pop_size : number total of individuals
+    - alpha, p0 : parameters for the Cannings model
+    - selection_fecundity : coefficient for the fecundity selection (if 0 there is no fecundity selection)
+    - selection_viability : coefficient for the viability selection (if 0 there is no viability selection)
+    - check_expectation : if True then raise an exception if the expectation of the numbers of offspring per individul is smaller than selection_fecundity
+    - return_offsprinf_shortage : if True then the function return an additional value:
+        If there are more offspring than the population size with the Cannings reproduction then this number is always 0.
+        Else this is the number of offspring generated with a Wright-Fisher model to reach the size of the population.
+    
     >>> np.random.seed(0) 
     >>> nb_next_generation(nb_individuals_type_A=10, pop_size=100, alpha=1.3, selection_viability=1)
     7
@@ -38,6 +48,9 @@ def nb_next_generation(nb_individuals_type_A, pop_size, alpha, p0=0, selection_f
         ...
     Exception: The expectation of the number of offspring per individual is 0.8224670334241132 but it should be greater than one.
     The Cannings reproduction is hence not well defined.
+    >>> nb_next_generation(nb_individuals_type_A=10, pop_size=100, alpha=1.4, p0=0.5, return_offspring_shortage=True)
+    (4, 1)
+    >>> # (in the next generation there was 4 offspring of type A and 1 amongs the offspring have been generated using a WF model)
     """
 
     if check_expectation:
@@ -54,6 +67,7 @@ def nb_next_generation(nb_individuals_type_A, pop_size, alpha, p0=0, selection_f
     nb_offspring_total = nb_offspring_type_A + nb_other_offspring
 
     if nb_offspring_total >= pop_size:
+        offspring_shortage = 0
         if selection_viability == 0:
             surviving_offspring_type_A = np.random.hypergeometric(
                 nb_offspring_type_A, nb_other_offspring, pop_size)
@@ -64,9 +78,12 @@ def nb_next_generation(nb_individuals_type_A, pop_size, alpha, p0=0, selection_f
         # there have not been enough offspring with the Cannings reproduction
         # we are adding offspring with a Wright-Fisher reproduction
         #   so that there are exactle pop_size offspring
+        offspring_shortage = pop_size - nb_offspring_total
         surviving_offspring_type_A = nb_offspring_type_A + additional_offspring(
             nb_individuals_type_A, pop_size, pop_size-nb_offspring_total)
-
+    
+    if return_offspring_shortage:
+        return surviving_offspring_type_A, offspring_shortage
     return surviving_offspring_type_A
 
 
