@@ -28,89 +28,6 @@ def additional_offspring(nb_individuals_type_A, pop_size, nb_missing_offspring):
     return nb_additional_offspring_type_A
 
 
-def nb_next_generation_neutral(nb_individuals_type_A, pop_size, alpha, p0=0):
-    """ Compute the number of individuals of type A in the next generation with a fecundity selection advantage (in a Cannings model)
-    - nb_individuals_type_A : number of individuals that have a selective advantage selection_coeff
-    - pop_size : number total of individuals
-    - alpha, p0 : parameters for the Cannings model
-
-    >>> np.random.seed(0)
-    >>> nb_next_generation_neutral(nb_individuals_type_A=50, pop_size=100, alpha=2)
-    46
-    """
-    nb_offspring_type_A = np.round(generate_offspring(
-        alpha, p0, nb_individuals_type_A)).astype(int)
-    nb_other_offspring = generate_offspring(
-        alpha, p0, pop_size-nb_individuals_type_A)
-
-    nb_offspring_total = nb_offspring_type_A + nb_other_offspring
-
-    if nb_offspring_total >= pop_size:
-        surviving_offspring_type_A = np.random.hypergeometric(
-            nb_offspring_type_A, nb_other_offspring, pop_size)
-    else:
-        surviving_offspring_type_A = nb_offspring_type_A + additional_offspring(
-            nb_individuals_type_A, pop_size, pop_size-nb_offspring_total)
-
-    return surviving_offspring_type_A
-
-
-def nb_next_generation_fecundity(nb_individuals_type_A, pop_size, alpha, p0=0, selection_coeff=0):
-    """ Compute the number of individuals of type A in the next generation with a fecundity selection advantage (in a Cannings model)
-    - nb_individuals_type_A : number of individuals that have a selective advantage selection_coeff
-    - pop_size : number total of individuals
-    - alpha, p0 : parameters for the Cannings model
-
-    >>> np.random.seed(0)
-    >>> nb_next_generation_fecundity(nb_individuals_type_A=50, pop_size=100, alpha=2, selection_coeff=1)
-    63
-    """
-
-    nb_offspring_type_A = np.round(
-        (1+selection_coeff)*generate_offspring(alpha, p0, nb_individuals_type_A)).astype(int)
-    nb_other_offspring = generate_offspring(
-        alpha, p0, pop_size-nb_individuals_type_A)
-
-    nb_offspring_total = nb_offspring_type_A + nb_other_offspring
-
-    if nb_offspring_total >= pop_size:
-        surviving_offspring_type_A = np.random.hypergeometric(
-            nb_offspring_type_A, nb_other_offspring, pop_size)
-    else:
-        surviving_offspring_type_A = nb_offspring_type_A + additional_offspring(
-            nb_individuals_type_A, pop_size, pop_size-nb_offspring_total)
-
-    return surviving_offspring_type_A
-
-
-def nb_next_generation_viability(nb_individuals_type_A, pop_size, alpha, p0=0, selection_coeff=0):
-    """ Compute the number of individuals of type A in the next generation with a viability selection advantage (in a Cannings model).
-    An non neutral Wallenius hypergeometric distribution is considered.
-    - nb_individuals_type_A : number of individuals that have a selective advantage selection_coeff
-    - pop_size : number total of individuals
-    - alpha, p0 : parameters for the Cannings model
-
-    >>> np.random.seed(0)
-    >>> nb_next_generation_viability(nb_individuals_type_A=50, pop_size=100, alpha=2, selection_coeff=1)
-    52
-    """
-
-    nb_offspring_type_A = generate_offspring(
-        alpha, p0, nb_individuals_type_A)
-    nb_other_offspring = generate_offspring(
-        alpha, p0, pop_size-nb_individuals_type_A)
-
-    nb_offspring_total = nb_offspring_type_A + nb_other_offspring
-
-    if nb_offspring_total >= pop_size:
-        surviving_offspring_type_A = nchypergeom_wallenius.rvs(
-            nb_offspring_total, nb_offspring_type_A, pop_size, 1+selection_coeff)
-    else:
-        return nb_offspring_type_A + additional_offspring(nb_individuals_type_A, pop_size, pop_size-nb_offspring_total)
-
-    return surviving_offspring_type_A
-
-
 def nb_next_generation(nb_individuals_type_A, pop_size, alpha, p0=0, selection_fecundity=0, selection_viability=0, check_expectation=True):
     """
     >>> np.random.seed(0) 
@@ -151,48 +68,6 @@ def nb_next_generation(nb_individuals_type_A, pop_size, alpha, p0=0, selection_f
             nb_individuals_type_A, pop_size, pop_size-nb_offspring_total)
 
     return surviving_offspring_type_A
-
-
-def nb_next_generation1(nb_individuals_type_A, pop_size, alpha, p0=0, selection_coeff=0, selection_type='neutral', check_expectation=True):
-    """ Compute the number of individuals of type A in the next generation with a selective advantage (in a Cannings model)
-    - selection_type : type of the selection. It can be either 'viability', 'fecundity' or 'neutral' if their is no selection
-    - selection_coeff : coefficient of selection if the selection type is not 'neutral'
-    - nb_individuals_type_A : number of individuals that have a selective advantage selection_coeff
-    - pop_size : number total of individuals
-    - alpha, p0 : parameters for the Cannings model
-    - check_expectation : if True then raise an exception if the expectation of the numbers of offspring per individul is smaller than one
-
-    >>> np.random.seed(0)
-    >>> nb_next_generation1(nb_individuals_type_A=50, pop_size=100, alpha=2, selection_coeff=1, selection_type='viability')
-    52
-    >>> nb_next_generation1(nb_individuals_type_A=50, pop_size=100, alpha=2, p0=0.1)
-    41
-    >>> nb_next_generation1(nb_individuals_type_A=50, pop_size=100, alpha=2, p0=0.5)
-    Traceback (most recent call last):
-        ...
-    Exception: The expectation of the number of offspring per individual is 0.8224670334241132 but it should be greater than one.
-    The Cannings reproduction is hence not well defined.
-    >>> nb_next_generation1(nb_individuals_type_A=50, pop_size=100, alpha=2, selection_type = 'this_type_does_not_exist')
-    Traceback (most recent call last):
-        ...
-    Exception: The selection type was 'this_type_does_not_exist' but it has to be one of those: 'viability', 'fecundity' or 'neutral'.
-    """
-
-    if check_expectation:
-        exp = average(alpha, p0)
-        if exp <= 1:
-            raise Exception(
-                f'The expectation of the number of offspring per individual is {exp} but it should be greater than one.\nThe Cannings reproduction is hence not well defined.')
-
-    if selection_type == 'fecundity':
-        return nb_next_generation_fecundity(nb_individuals_type_A, pop_size, alpha, p0, selection_coeff)
-    elif selection_type == 'viability':
-        return nb_next_generation_viability(nb_individuals_type_A, pop_size, alpha, p0, selection_coeff)
-    elif selection_type == 'neutral':
-        return nb_next_generation_neutral(nb_individuals_type_A, pop_size, alpha, p0)
-    else:
-        raise Exception(
-            f"The selection type was '{selection_type}' but it has to be one of those: 'viability', 'fecundity' or 'neutral'.")
 
 
 if __name__ == "__main__":
