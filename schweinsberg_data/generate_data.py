@@ -17,7 +17,7 @@ Architecture of the json file:
 from os.path import exists
 from os import remove
 import json
-import cannings
+from cannings import Schweinsberg
 
 
 def initialise_file(file_name, pop_size, p0, selection_type):
@@ -83,7 +83,7 @@ def generate_fixation(file_name, pop_size, alpha, p0, selection_coeff, selection
     >>> generate_fixation(file_name, pop_size=100, alpha=1.1, p0=0.1, selection_coeff=0.1, n_iter=10)
     >>> exists(file_name) # the file has been created and the data generated
     True
-    >>> remove(file_name) # erasing the file 
+    >>> remove(file_name) # erasing the file
     """
     
     initialise_data(file_name, pop_size, alpha, p0,
@@ -97,13 +97,12 @@ def generate_fixation(file_name, pop_size, alpha, p0, selection_coeff, selection
         data for data in all_data if data['alpha'] == alpha and data['selection_coefficient'] == selection_coeff)
     id_stored_data = all_data.index(stored_data)
 
+    sch = Schweinsberg(alpha, p0)
     for _ in range(n_iter):
         if selection_type=='fecundity':
-            fix, time = cannings.fixation(
-                pop_size, alpha, p0, selection_fecundity=selection_coeff)
+            fix, time = sch.fixation(pop_size, selection_fecundity=selection_coeff)
         elif selection_type=='viability':
-            fix, time = cannings.fixation(
-                pop_size, alpha, p0, selection_viability=selection_coeff) 
+            fix, time = sch.fixation(pop_size, selection_viability=selection_coeff) 
         else:
             raise Exception(f"The type of selection was {selection_type} but has to be 'fecundity' or 'viability'")
         if not fix:

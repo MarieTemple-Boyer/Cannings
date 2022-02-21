@@ -2,24 +2,21 @@
 
 Tools for understanding a Cannings model for the evolution of a population.
 
-The distribution for the Cannings model is inspired by the article 'Coalescent processes obtained from supercritical Galton-Walton processes' from Jason Schweinsberg (2003).
 
 ## Cannings model used
 
-In the module p0 is the probability that an individual has no offspring and alpha is such that the probability that an individual has more than k offpsprings is (1-p0) 1/(k^alpha).
+Each individual has offspring according to a distribution choosen by the user.
 The surviving offspring are then sampled so that there only N offsprings that survived where N is the size of the population. If there is less offspring than the population size, offspring are generated using a Wright-Fisher reproduction so that the number of offspring reach exactly the population size.
 
-The fecundity selection allow the individuals of type A to have more offspring.
-The viability selection allow the offspring of individuals of type A to have more chances to survive.
+The fecundity selection allow the individuals of type 1 to have more offspring.
+The viability selection allow the offspring of individuals of type 1 to have more chances to survive.
 
 ## Usage
 
-The submodule cannings contains tools to modelise a Cannings reproduction with selection.
-The file 'offspring_distribution' allows to compute a random draw of the number of offsprings of an individual.
-The file 'diffusion' allows to compute the diffusion on an allele A tha have a selective advantage.
-The file 'fixation' allows to compute the time to fixation or extinction of an allele A that have a selective advantage.
+The submodule cannings contains the definition of the class Cannings that represent a Cannings reproduction.
+It also contains the definition of a child class of Cannings called Schweinberg which is an approximation of a beta coalescent.
 
-The submodule cannings_data allows to compute a lot of fixation times, to store the simulations and handle to data collected.
+The submodule schweinsberg_data allows to compute a lot of fixation times for a Schweinsberg reproduction, to store the simulations and handle to data collected.
 It is usefull to compare fecundity and viability selection. Yet it is not designed to have both fecundity and viability selection.
 
 ## Installation
