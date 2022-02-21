@@ -11,7 +11,8 @@ from cannings import Cannings
 class Poisson(Cannings):
     """ Class to implement a Cannings model with a Poisson distribution"""
 
-    def __init__(self, lanbda):
+    def __init__(self,
+                 lanbda: float):
         """ Construct a Cannings model with a Poisson distribution of parameter lanbda
         >>> pois = Poisson(lanbda=1.1)
         >>> np.random.seed(0)
@@ -30,7 +31,7 @@ class Poisson(Cannings):
         Cannings.__init__(self, distrib, lanbda=lanbda)
         self.lanbda = lanbda
 
-    def average(self):
+    def average(self) -> float:
         """ Compute the average of the number of offspring per individual.
 
         >>> pois.average()

@@ -17,7 +17,9 @@ from cannings import Cannings
 class Schweinsberg(Cannings):
     """ Class to implement a Cannings model that approximates a beta-coalescent"""
 
-    def __init__(self, alpha, p0):
+    def __init__(self,
+                 alpha: float,
+                 p0: float):
         """ Construct a Cannings model with parameters (alpha, p0)
         >>> sch = Schweinsberg(alpha=1.5, p0=0.1)
         >>> np.random.seed(0)
@@ -42,7 +44,7 @@ class Schweinsberg(Cannings):
         self.alpha = alpha
         self.p0 = p0
 
-    def average(self):
+    def average(self) -> float:
         """ Compute the average of the number of offspring per individual.
 
         >>> sch = Schweinsberg(alpha=2, p0=0)
@@ -56,7 +58,7 @@ class Schweinsberg(Cannings):
         return math.inf
 
 
-def check_parameters(alpha, p0):
+def check_parameters(alpha: float, p0: float) -> None:
     """ Check that the parameters alpha and p0 are admissible
         - 0 < alpha
         - 0 <= p0 <= 1

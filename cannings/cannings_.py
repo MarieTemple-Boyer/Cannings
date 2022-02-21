@@ -16,17 +16,18 @@ Wallenius hypergeometric distribution with the offspring of type 1 having a weig
 
 import numpy as np
 from scipy.stats import nchypergeom_wallenius
+from collections.abc import Callable
 
 
 class Cannings:
     """ Class to implement a Cannings model from an offspring distribution"""
 
     def __init__(self,
-                 offspring_distribution,
-                 **parameters):
+                 offspring_distribution: Callable[[int, any], int],
+                 **parameters: any):
         """ Construct a Cannings model.
         offspring_distribution is a function that take in argument a number of individuals and
-        eventually some parameters and return the number of offspring of those individuals.
+        eventually some parameters and return the number of offspring of those individuals (int).
         >>> def constant_distrib(nb_individuals, const):
         ...     return nb_individuals*const
         >>> constant = Cannings(constant_distrib, const=3)
@@ -38,7 +39,7 @@ class Cannings:
         self.offspring_distribution = offspring_distribution
         self.parameters = parameters
 
-    def average(self):
+    def average(self) -> float:
         """ Return the average of the number of offspring per individual with a Monte-Carlo method.
         >>> np.random.seed(0)
         >>> constant.average()
@@ -55,7 +56,7 @@ class Cannings:
         return value / n_iter
 
     def generate_offspring(self,
-                           nb_individuals=1):
+                           nb_individuals: int = 1) -> int:
         """ Return the number of offspring of nb_individuals
         >>> constant.generate_offspring()
         3
@@ -65,12 +66,12 @@ class Cannings:
         return self.offspring_distribution(nb_individuals=nb_individuals, **self.parameters)
 
     def nb_next_generation(self,
-                           nb_individuals_type_1,
-                           pop_size,
-                           selection_fecundity=0,
-                           selection_viability=0,
-                           return_offspring_shortage=False,
-                           check_expectation=True):
+                           nb_individuals_type_1: int,
+                           pop_size: int,
+                           selection_fecundity: float = 0.,
+                           selection_viability: float = 0.,
+                           return_offspring_shortage: bool = False,
+                           check_expectation: bool = True) -> int | tuple[int, int]:
         """ Return the number of individual of type 1 after one generation knowing that their
         number was nb_individuals_type_1 at the previous generation.
         The type 1 can have fecundity and viability selective advantage.
@@ -124,12 +125,12 @@ class Cannings:
         return surviving_offspring_type_1
 
     def fixation(self,
-                 pop_size,
-                 initial_nb_indiv_type_1=1,
-                 selection_fecundity=0,
-                 selection_viability=0,
-                 return_offspring_shortage=False,
-                 check_expectation=False):
+                 pop_size: int,
+                 initial_nb_indiv_type_1: int = 1,
+                 selection_fecundity: float = 0.,
+                 selection_viability: float = 0.,
+                 return_offspring_shortage: bool = False,
+                 check_expectation: bool = False) -> tuple[int, int] | tuple[int, int, list[tuple[int, int]]]:
         """ Compute the time to fixation or extinction of the type 1.
         It returns a couple (fixation, time).
             - fixation is True is the type 1 reached fixation and
@@ -146,7 +147,8 @@ class Cannings:
         >>> np.random.seed(0)
         >>> constant.fixation(pop_size=100, selection_fecundity=1)
         (True, 15)
-        >>> poisson.fixation(pop_size=10, selection_fecundity=1, return_offspring_shortage=True, check_expectation=False)
+        >>> poisson.fixation(pop_size=10, selection_fecundity=1,
+        ...                  return_offspring_shortage=True, check_expectation=False)
         (True, 6, [(1, 6), (2, 3), (3, 5)])
         >>> # The simulation began with one individual of type 1 in a population of size 10
         >>> # The type 1 has a fecundity selection advantage of parameter 1.
@@ -192,7 +194,7 @@ class Cannings:
             return fixation, nb_generations, offspring_shortage
         return fixation, nb_generations
 
-    def check_expectation(self):
+    def check_expectation(self) -> None:
         """ Check that the expectation of the number of individual is bigger than one and raise
         an Exception otherwise.
         >>> np.random.seed(0)
@@ -206,11 +208,13 @@ class Cannings:
         avg = self.average()
         if avg <= 1:
             raise Exception(
-                f'The expectation of the number of offspring per individual is {avg  } but it ' \
+                f'The expectation of the number of offspring per individual is {avg  } but it '
                 'should be greater than one.\nThe Cannings reproduction is hence not well defined.')
 
 
-def additional_offspring(nb_individuals_type_1, pop_size, nb_missing_offspring):
+def additional_offspring(nb_individuals_type_1: int,
+                         pop_size: int,
+                         nb_missing_offspring: int) -> int:
     """ Compute the number of individual of type 1 after a  Wright-Fisher reproduction
         The reproducion generates exactly nb_missing_offspring.
         This function is used to complete the population if there are not enough offspring
