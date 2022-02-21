@@ -14,7 +14,7 @@ The viability selection allow the offspring of individuals of type 1 to have mor
 ## Usage
 
 The submodule cannings contains the definition of the class Cannings that represent a Cannings reproduction.
-It also contains the definition of a child class of Cannings called Schweinberg which is an approximation of a beta coalescent.
+It also contains the definition of two child classes of Cannings (Schweinsberg approximate a beta-coalescent and Poisson use a Poisson distribution).
 
 The submodule schweinsberg_data allows to compute a lot of fixation times for a Schweinsberg reproduction, to store the simulations and handle to data collected.
 It is usefull to compare fecundity and viability selection. Yet it is not designed to have both fecundity and viability selection.

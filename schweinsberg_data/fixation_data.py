@@ -7,7 +7,8 @@ from tabulate import tabulate
 
 
 class CompleteData:
-    """ Class for the data of times and probability of fixations with the hyperparameters and parameters associated.
+    """ Class for the data of times and probability of fixations with the hyperparameters and
+    parameters associated.
     >>> complete_data = CompleteData('data_example/permanent.json')
     """
 
@@ -24,7 +25,8 @@ class CompleteData:
     def alpha(self, selection_coeff=None):
         """
         Return the values of alpha for which data are stored.
-        If selection_coeff is not None the it returns the value of alpha for which data are stored with the choosen selection coefficient. 
+        If selection_coeff is not None the it returns the value of alpha for which data are stored with
+        the choosen selection coefficient. 
         >>> complete_data.alpha()
         [1.1, 1.5]
         """
@@ -40,7 +42,8 @@ class CompleteData:
     def selection_coeff(self, alpha=None):
         """
         Return the values of selection coefficinet for which data are stored.
-        If alpha is not None the it returns the value of selection coefficient for which data are stored with the choosen alpha. 
+        If alpha is not None the it returns the value of selection coefficient for which data are
+        stored with the choosen alpha.
 
         >>> complete_data.selection_coeff(alpha=1.5)
         [0.1]
@@ -74,12 +77,14 @@ class CompleteData:
         None
         """
         if self.exists(alpha, selection_coeff):
-            return next(fixation_set for fixation_set in self.fixations if fixation_set.alpha == alpha and fixation_set.selection_coeff == selection_coeff)
-        else:
-            return None
+            return next(fixation_set for fixation_set in
+                    self.fixations if fixation_set.alpha == alpha
+                                   and fixation_set.selection_coeff == selection_coeff)
+        return None
 
     def print_nb_iterations(self):
-        """ Print a table with two entries (alpha and the selection coefficient) giving the number of iterations for each set of values/
+        """ Print a table with two entries (alpha and the selection coefficient) giving
+        the number of iterations for each set of values/
         >>> complete_data.print_nb_iterations()
         Number of iterations
         -----------------  ----  ----
@@ -104,7 +109,8 @@ class CompleteData:
         print(tabulate(tab_iter))
 
     def print_nb_fixations(self):
-        """ Print a table with two entries (alpha and the selection coefficient) giving the number of fixations for each set of values/
+        """ Print a table with two entries (alpha and the selection coefficient) giving
+        the number of fixations for each set of values.
         >>> complete_data.print_nb_fixations()
         Number of fixations
         -----------------  ---  ---
@@ -137,7 +143,11 @@ class Hyperparameters:
         selection: type of selection (viability or fecundity for instance)
     """
 
-    def __init__(self, model, population_size, p0, selection):
+    def __init__(self,
+                 model,
+                 population_size,
+                 p0,
+                 selection):
         self.model = model
         self.population_size = population_size
         self.p0 = p0
@@ -148,7 +158,10 @@ class FixationSet:
     """ Class for a table of times of fixations or extinctions and the parameters associated.
     """
 
-    def __init__(self, alpha, selection_coeff, times):
+    def __init__(self,
+                 alpha,
+                 selection_coeff,
+                 times):
         self.alpha = alpha
         self.selection_coeff = selection_coeff
         self.times = times
@@ -191,7 +204,8 @@ class FixationSet:
         return sum(self.fixation_times()) / self.nb_fixations()
 
     def __str__(self):
-        return f'alpha: {self.alpha} | selection coefficient: {self.selection_coeff}' + '\n' + str(self.times)
+        return f'alpha: {self.alpha} | selection coefficient: {self.selection_coeff}'\
+                '\n' + str(self.times)
 
 
 if __name__ == '__main__':

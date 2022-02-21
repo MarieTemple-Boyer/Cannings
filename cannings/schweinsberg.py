@@ -16,15 +16,17 @@ from cannings import Cannings
 
 class Schweinsberg(Cannings):
     """ Class to implement a Cannings model that approximates a beta-coalescent"""
-    
+
     def __init__(self, alpha, p0):
-        
-        """ Construc a Cannings model with parameters (alpha, p0)
-        >>> sch = Schweinsberg(alpha=2, p0=0.2)
-        >>> sch = Schweinsberg(alpha=1.1, p0=2)
-        Traceback (most recent call last):
-            ...
-        Exception: p0=2 but it must respect 0 <= p0 <= 1
+        """ Construct a Cannings model with parameters (alpha, p0)
+        >>> sch = Schweinsberg(alpha=1.5, p0=0.1)
+        >>> np.random.seed(0)
+        >>> sch.generate_offspring(nb_individuals=3)
+        3
+        >>> sch.nb_next_generation(nb_individuals_type_1=10, pop_size=100)
+        5
+        >>> sch.fixation(pop_size=100, selection_viability=1)
+        (True, 11)
         """
         check_parameters(alpha, p0)
 
@@ -42,7 +44,7 @@ class Schweinsberg(Cannings):
 
     def average(self):
         """ Compute the average of the number of offspring per individual.
-        
+
         >>> sch = Schweinsberg(alpha=2, p0=0)
         >>> sch.average()
         1.6449340668482264
@@ -52,60 +54,6 @@ class Schweinsberg(Cannings):
             return (1-self.p0)*zeta(self.alpha)
 
         return math.inf
-
-    def nb_next_generation(self, nb_individuals_type_1, pop_size, selection_fecundity=0, selection_viability=0, return_offspring_shortage=False, check_expectation=True):
-        """ Return the number of individual of type 1 after one generation knowing that their
-        number was nb_individuals_type_1 at the previous generation.
-        The type 1 can have fecundity and viability selective advantage.
-        If return_offspring_shortage then the function also return the shortage of offspring after
-        the Cannings reproduction (that have been artificially added with a Wright-Fisher
-        reproduction).
-        If check_expectation the function return an Exception if the expectation of the number
-        of offspring per individual is smaller than 1
-        
-        (see the documentation of Cannings.nb_next_generation for more details)
-        
-        >>> np.random.seed(0)
-        >>> sch.nb_next_generation(nb_individuals_type_1=10, pop_size=100, selection_viability=2)
-        6
-        """
-        if check_expectation:
-            self.check_expectation()
-        return Cannings.nb_next_generation(self, nb_individuals_type_1, pop_size, selection_fecundity=selection_fecundity, selection_viability=selection_viability, return_offspring_shortage=return_offspring_shortage)
-        
-
-    def fixation(self, pop_size, initial_nb_indiv_type_1=1, selection_fecundity=0, selection_viability=0, return_offspring_shortage=False, check_expectation=True):
-        """ Compute the time to fixation or extinction of the type 1.
-        It returns a couple (fixation, time).
-            - fixation is True is the type 1 reached fixation and
-              False the type 1 reached extinction
-            - time is the time to fixation or extinction
-        The type 1 can have fecundity and viability selective advantage.
-        If return_offspring_shortage then the function also return the shortage of offspring
-        after the Cannings reproduction as a list of tuple (generation, shortage).
-            - generation is the generation where there have been a shortage
-            - shortage is the number of offspring that have been artificially added with a
-              Wright-Fisher reproduction
-        If check_expectation the function return an Exception if the expectation of the number
-        of offspring per individual is smaller than 1
-        
-        (see the documentation of Cannings.fixation for more details)
-        
-        >>> np.random.seed(0)
-        >>> sch.fixation(pop_size=10, selection_fecundity=1)
-        (False, 6)
-        """
-
-        if check_expectation:
-            self.check_expectation()
-
-        return Cannings.fixation(self, pop_size, initial_nb_indiv_type_1=initial_nb_indiv_type_1, selection_fecundity=selection_fecundity, selection_viability=selection_viability, return_offspring_shortage=return_offspring_shortage)
-
-    def check_expectation(self):
-        avg = self.average()
-        if avg <= 1:
-            raise Exception(
-                f'The expectation of the number of offspring per individual is {avg  } but it should be greater than one.\nThe Cannings reproduction is hence not well defin  ed.')
 
 
 def check_parameters(alpha, p0):
@@ -119,13 +67,9 @@ def check_parameters(alpha, p0):
         raise Exception(f"alpha={alpha} but it must respect 0 < alpha")
 
 
-
 if __name__ == "__main__":
 
     sch = Schweinsberg(alpha=1.5, p0=0.1)
-    sch.average()
-    sch.nb_next_generation(10, 100)
-    sch.fixation(100)
 
     import doctest
     doctest.testmod()
