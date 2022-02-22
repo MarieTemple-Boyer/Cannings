@@ -71,7 +71,7 @@ class Cannings:
                            selection_fecundity: float = 0.,
                            selection_viability: float = 0.,
                            return_offspring_shortage: bool = False,
-                           check_expectation: bool = True) -> int | tuple[int, int]:
+                           check_expectation: bool = True) -> int:
         """ Return the number of individual of type 1 after one generation knowing that their
         number was nb_individuals_type_1 at the previous generation.
         The type 1 can have fecundity and viability selective advantage.
@@ -130,7 +130,7 @@ class Cannings:
                  selection_fecundity: float = 0.,
                  selection_viability: float = 0.,
                  return_offspring_shortage: bool = False,
-                 check_expectation: bool = False) -> tuple[int, int] | tuple[int, int, list[tuple[int, int]]]:
+                 check_expectation: bool = False) -> tuple[int, int]:
         """ Compute the time to fixation or extinction of the type 1.
         It returns a couple (fixation, time).
             - fixation is True is the type 1 reached fixation and

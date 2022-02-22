@@ -23,6 +23,8 @@ It is usefull to compare fecundity and viability selection. Yet it is not design
 
 `python setup.py install`
 
+The module is made for python 3.
+
 The following python modules have to be installed:
 - numpy
 - math
