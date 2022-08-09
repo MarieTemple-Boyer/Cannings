@@ -1,6 +1,8 @@
-# Cannings
+#Cannings
 
-Tools for understanding a Cannings model for the evolution of a population.
+Tools for understanding a Cannings model for the evolution of a population. A precise explanation of the model can be found in the path `extra_ressources/details_cannings_reproduction.pdf`.
+
+  
 
 
 ## Cannings model used
